@@ -4,12 +4,14 @@
 	import Coffee from "./components/Coffee.svelte";
 	import { Screens } from "./enums/enums";
 
+	let triggerMap: boolean = false;
+
+	let screenIndex: number = 0;
 	let currentScreen: string = Screens.MAZE_SCREEN;
-
 	let menuItems: string[] = [Screens.MAZE_SCREEN, Screens.MAZE_VANILLA_SCREEN, Screens.COFFEE_SCREEN];
-	export let screenIndex = 0;
 
-	const changeMenuSelect = (event: CustomEvent<any>) => {
+	const changeMenuSelection = (event: CustomEvent<any>) => {
+		triggerMap = false;
 		screenIndex = 0;
 		if(!event.detail.choices) {
 			currentScreen = Screens.MAIN_MENU;
@@ -19,8 +21,9 @@
 		menuItems = event.detail.choices;
 	};
 
-	const handleMenuSelect = (event: { key: string; }) => {
-		if (event.key == "Enter") currentScreen = menuItems[screenIndex];
+	const handleKeyboardNavigation = (event: { key: string; }) => {
+		if (event.key == "Enter" && currentScreen == Screens.MAIN_MENU) currentScreen = menuItems[screenIndex];
+		if (event.key == "Enter" && currentScreen == Screens.MAZE_SCREEN) triggerMap = !triggerMap;
 		if (event.key === "ArrowDown") screenIndex++;
 		if (event.key === "ArrowUp") screenIndex--;
 		if (screenIndex > menuItems.length - 1) screenIndex = 0;
@@ -29,7 +32,7 @@
 	};
 </script>
 
-<svelte:window on:keydown="{handleMenuSelect}" />
+<svelte:window on:keydown|preventDefault|stopPropagation="{handleKeyboardNavigation}" />
 <main>
 	<h1>Meow Maze</h1>
 	{#if currentScreen == Screens.MAIN_MENU}
@@ -40,7 +43,7 @@
 		</ul>
 	{/if}
 	{#if currentScreen == Screens.MAZE_SCREEN}
-		<Maze on:keyHandleChanged="{changeMenuSelect}"/>
+		<Maze on:keyHandleChanged="{changeMenuSelection}" selectionIndex={screenIndex} triggerMap={triggerMap} />
 	{/if}
 	{#if currentScreen == Screens.MAZE_VANILLA_SCREEN}
 		<MazeVanilla />

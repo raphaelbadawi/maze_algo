@@ -1,59 +1,76 @@
 <script lang="ts">
-import { onMount, onDestroy } from "svelte";
-import { createEventDispatcher } from 'svelte';
-import type { Cell } from "../types/types";
+    import { onMount, onDestroy, afterUpdate } from "svelte";
+    import { createEventDispatcher } from 'svelte';
+    import type { Cell } from "../types/types";
 
-import Map from "./Map.svelte";
+    import Map from "./Map.svelte";
 
-let maps: Promise<{}> = new Promise(() => {});
-let mapsChoices: string[] = [];
-let currentMap: Cell[] = [];
-const dispatchMapsChoices = createEventDispatcher();
+    export let triggerMap: boolean;
+    export let selectionIndex: number;
 
-const displayMaze = (choice: string): void => {
-    const [dim, ex]: RegExpMatchArray = choice.match(/\d+/g);
-    currentMap = maps[dim]["ex-" + ex];
-}
+    // make sure a new map has been fetched from the maps object before displaying any map
+    let mapFetched = false;
 
-const stringifyMapsChoices = (): void => {
-    for (const key of Object.keys(maps)) {
-        for (const subKey of Object.keys(maps[key])) {
-            mapsChoices.push("Dim " + key + " - " + subKey.replace("ex-", "Map "));
+    let currentMap: Cell[] = [];
+    let maps: Promise<{}> = new Promise(() => {});
+    let mapsChoices: string[] = [];
+
+    const dispatchMapsChoices = createEventDispatcher();
+
+    const displayMaze = (): void => {
+        const currentChoice = document.querySelector(".mapSelector li.selected").innerHTML;
+        const [dim, ex]: RegExpMatchArray = currentChoice.match(/\d+/g);
+        currentMap = maps[dim]["ex-" + ex];
+        mapFetched = true;
+    }
+
+    const stringifyMapsChoices = (): void => {
+        for (const key of Object.keys(maps)) {
+            for (const subKey of Object.keys(maps[key])) {
+                mapsChoices.push("Dim " + key + " - " + subKey.replace("ex-", "Map "));
+            }
         }
-    }
-};
+    };
 
-onMount(async () => {
-    const res: Response = await fetch("./maps/mazeConfig.json");
-    if (!res.ok) {
-        maps = Promise.reject(res.statusText);
-        return;
-    }
-    maps = await Promise.resolve(await res.json());
-    dispatchMapsChoices('keyHandleChanged', {
-        choices: mapsChoices
+    afterUpdate(() => {
+        mapFetched = false;
+        const selectedItem = document.querySelector(".mapSelector li.selected");
+        if (!selectedItem) return;
+        document.querySelector(".mapSelector li.selected").scrollIntoView();
+        if (triggerMap) displayMaze();
     });
-    stringifyMapsChoices();
-});
 
-onDestroy(() => {
-    dispatchMapsChoices('keyHandleChanged', {
-        choices: false
+    onMount(async () => {
+        const res: Response = await fetch("./maps/mazeConfig.json");
+        if (!res.ok) {
+            maps = Promise.reject(res.statusText);
+            return;
+        }
+        maps = await Promise.resolve(await res.json());
+        dispatchMapsChoices('keyHandleChanged', {
+            choices: mapsChoices
+        });
+        stringifyMapsChoices();
     });
-});
+
+    onDestroy(() => {
+        dispatchMapsChoices('keyHandleChanged', {
+            choices: false
+        });
+    });
 </script>
 
 <div class="content">
     {#await maps}
     <div class="maze">Loading...</div>
     {:then}
-        {#if currentMap.length}
-            <Map />
+        {#if triggerMap && currentMap.length && mapFetched}
+            <Map map={currentMap}/>
         {:else}
             <div class="maze">Choose wisely</div>
             <ul class="mapSelector">
-                {#each mapsChoices as choice (choice)}
-                    <li on:click="{ e => displayMaze(choice) }">{ choice }</li>
+                {#each mapsChoices as choice, index (choice)}
+                    <li class="{index == selectionIndex ? "selected" : ""}" on:click="{ e => displayMaze() }">{ choice }</li>
                 {/each}
             </ul>
         {/if}
@@ -76,7 +93,7 @@ onDestroy(() => {
     .mapSelector li {
         cursor: pointer;
     }
-    .mapSelector li:hover {
+    .mapSelector li:hover, .selected {
         color: yellow;
     }
 </style>

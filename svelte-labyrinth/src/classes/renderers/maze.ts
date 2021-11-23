@@ -1,5 +1,7 @@
+import type { Cell } from "../../types/types";
+
 export class MazeRenderer {
-  map: any;
+  map: Cell[];
   canvas: HTMLDivElement;
   constructor(map) {
     this.map = map;

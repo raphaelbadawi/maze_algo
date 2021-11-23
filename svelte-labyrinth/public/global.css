@@ -64,6 +64,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 300;
   letter-spacing: 0.5rem;
   margin-bottom: 3rem;
+  text-align: center;
 }
 
 h1 {
@@ -84,4 +85,38 @@ ul, .content {
 
 li {
   list-style: none;
+}
+
+.canvas {
+  display: grid;
+  width: 80%;
+  height: 80%;
+}
+
+.cell {
+  border: 1px solid transparent;
+}
+
+.top {
+  border-top: 1px solid darkgrey;
+}
+
+.right {
+  border-right: 1px solid darkgrey;
+}
+
+.bottom {
+  border-bottom: 1px solid darkgrey;
+}
+
+.left {
+  border-left: 1px solid darkgrey;
+}
+
+.entrance {
+  background-image: radial-gradient(closest-side at 50%, green, transparent);
+}
+
+.exit {
+  background-image: radial-gradient(closest-side at 50%, red, transparent);
 }
