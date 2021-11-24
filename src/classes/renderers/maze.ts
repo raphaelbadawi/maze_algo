@@ -9,13 +9,13 @@ export class MazeRenderer {
     this.canvas = this.renderCanvas(colsCount, rowsCount);
   }
 
-  getCanvasDimensions() {
+  private getCanvasDimensions() {
     const colsCount: number = Math.max(...this.map.map((cell) => cell.posX)) + 1;
     const rowsCount: number = Math.max(...this.map.map((cell) => cell.posY)) + 1;
     return { colsCount, rowsCount };
   }
 
-  renderCanvas(colsCount: number, rowsCount: number) {
+  private renderCanvas(colsCount: number, rowsCount: number) {
     const canvas: HTMLDivElement = document.createElement("div");
     canvas.classList.add("canvas");
     canvas.style.gridTemplateColumns = `repeat(${colsCount.toString()}, 1fr)`;
@@ -23,7 +23,7 @@ export class MazeRenderer {
     return canvas;
   }
 
-  renderWalls(cellElement: HTMLDivElement, walls: boolean[]) {
+  private renderWalls(cellElement: HTMLDivElement, walls: boolean[]) {
     const [top, right, bottom, left] = walls;
     if (top) cellElement.classList.add("top");
     if (right) cellElement.classList.add("right");

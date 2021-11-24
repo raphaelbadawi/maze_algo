@@ -7,4 +7,5 @@ export type Cell = {
     walls: boolean[],
     visited?: boolean;
     previous?: Cell;
+    score?: number;
 }
