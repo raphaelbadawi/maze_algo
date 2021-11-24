@@ -9,6 +9,7 @@ export class MazeGraph {
   startPoint: Cell;
   endPoint: Cell;
   maxHeuristic: number;
+
   constructor(map: Cell[], board: MazeRenderer) {
     this.map = map;
     this.board = board;

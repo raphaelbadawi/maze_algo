@@ -3,6 +3,7 @@ import type { Cell } from "../../types/types";
 export class MazeRenderer {
   map: Cell[];
   canvas: HTMLDivElement;
+
   constructor(map: Cell[]) {
     this.map = map;
     const { colsCount, rowsCount } = this.getCanvasDimensions();

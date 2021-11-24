@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy, afterUpdate } from "svelte";
     import { createEventDispatcher } from 'svelte';
+    import { MazeGenerator } from "../classes/generators/maze";
     import type { Cell } from "../types/types";
 
     import Map from "./Map.svelte";
@@ -17,11 +18,19 @@
 
     const dispatchMapsChoices = createEventDispatcher();
 
-    const displayMaze = (index = -1): void => {
+    const randomMazeHandler = () => {
+        /** @todo */
+        const mazeGenerator: MazeGenerator = new MazeGenerator(4, 4);
+        currentMap = mazeGenerator.map;
+        triggerMap = true;
+        mapFetched = true;
+    }
+
+    const displayMaze = (index: number = -1): void => {
         let currentChoiceElement: HTMLDivElement = document.querySelector(".mapSelector li.selected");
         if (index >= 0) {
             triggerMap = !triggerMap;
-            currentChoiceElement = document.querySelector(`#map-${index}`);
+            currentChoiceElement = document.querySelector(`#map-${index.toString()}`);
             selectionIndex = index;
         }
         if (currentChoiceElement) {
@@ -73,7 +82,7 @@
     <div class="maze">Loading...</div>
     {:then}
         {#if currentMap.length && mapFetched}
-            <Map map={currentMap} on:mapClicked="{e => displayMaze(selectionIndex)}"/>
+            <Map map={currentMap} on:mapClicked="{e => { displayMaze(selectionIndex); }}"/>
         {:else}
             <div class="maze">Choose wisely</div>
             <ul class="mapSelector">
@@ -81,6 +90,7 @@
                     <li id="map-{index}" class="{index == selectionIndex ? "selected" : ""}" on:click="{e => displayMaze(index)}">{ choice }</li>
                 {/each}
             </ul>
+            <button on:click="{randomMazeHandler}">Generate random maze</button>
         {/if}
     {:catch error}
     <div class="error">Error: { error }</div>
@@ -98,6 +108,7 @@
         height: calc(100vh - 500px);
         overflow-y: scroll;
         scrollbar-width: thin;
+        padding-inline: 1rem;
     }
     .mapSelector::-webkit-scrollbar {
         width: 6px;
@@ -110,6 +121,21 @@
         cursor: pointer;
     }
     .mapSelector li:hover, .selected {
-        color: yellow;
+        color: darkorange;
+    }
+    button {
+        color: white;
+        background-color: darkorange;
+        border: 0;
+        padding: 0.5rem 1rem;
+        margin-top: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: white 0px 3px 10px;
+        transition: all 0.3s ease-in-out;
+    }
+    button:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: white 0px 5px 20px;
     }
 </style>

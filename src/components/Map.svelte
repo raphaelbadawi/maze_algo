@@ -56,7 +56,7 @@
         color: white;
         background-color: teal;
         padding: 0.5rem 1rem;
-        border-radius: 10px;
+        border-radius: 5px;
     }
     .btn-group button:hover {
         background-color: #00bcd4;
