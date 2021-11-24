@@ -38,12 +38,12 @@
 	{#if currentScreen == Screens.MAIN_MENU}
 		<ul id="menuSelector">
 			{#each menuItems as item, index (item)}
-				<li class="{index == screenIndex ? "selected" : ""}" on:click="{e => currentScreen = menuItems[index]}">{ item }</li>
+				<li class="{index == screenIndex ? "selected" : ""}" on:click="{e => { screenIndex = index; currentScreen = menuItems[index]; }}">{ item }</li>
 			{/each}
 		</ul>
 	{/if}
 	{#if currentScreen == Screens.MAZE_SCREEN}
-		<Maze on:keyHandleChanged="{changeMenuSelection}" selectionIndex={screenIndex} triggerMap={triggerMap} />
+		<Maze on:keyboardHandlerChanged="{changeMenuSelection}" selectionIndex={screenIndex} triggerMap={triggerMap} />
 	{/if}
 	{#if currentScreen == Screens.MAZE_VANILLA_SCREEN}
 		<MazeVanilla />

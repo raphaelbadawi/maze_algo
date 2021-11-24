@@ -3,27 +3,27 @@ import type { Cell } from "../../types/types";
 export class MazeRenderer {
   map: Cell[];
   canvas: HTMLDivElement;
-  constructor(map) {
+  constructor(map: Cell[]) {
     this.map = map;
     const { colsCount, rowsCount } = this.getCanvasDimensions();
     this.canvas = this.renderCanvas(colsCount, rowsCount);
   }
 
   getCanvasDimensions() {
-    const colsCount = Math.max(...this.map.map((cell) => cell.posX)) + 1;
-    const rowsCount = Math.max(...this.map.map((cell) => cell.posY)) + 1;
+    const colsCount: number = Math.max(...this.map.map((cell) => cell.posX)) + 1;
+    const rowsCount: number = Math.max(...this.map.map((cell) => cell.posY)) + 1;
     return { colsCount, rowsCount };
   }
 
-  renderCanvas(colsCount, rowsCount) {
-    const canvas = document.createElement("div");
+  renderCanvas(colsCount: number, rowsCount: number) {
+    const canvas: HTMLDivElement = document.createElement("div");
     canvas.classList.add("canvas");
-    canvas.style.gridTemplateColumns = `repeat(${colsCount}, 1fr)`;
-    canvas.style.gridTemplateRows = `repeat(${rowsCount}, 1fr)`;
+    canvas.style.gridTemplateColumns = `repeat(${colsCount.toString()}, 1fr)`;
+    canvas.style.gridTemplateRows = `repeat(${rowsCount.toString()}, 1fr)`;
     return canvas;
   }
 
-  renderWalls(cellElement, walls) {
+  renderWalls(cellElement: HTMLDivElement, walls: boolean[]) {
     const [top, right, bottom, left] = walls;
     if (top) cellElement.classList.add("top");
     if (right) cellElement.classList.add("right");
@@ -32,12 +32,12 @@ export class MazeRenderer {
     return cellElement;
   }
 
-  renderCell(cell) {
+  renderCell(cell: Cell) {
     const { posX, posY, walls } = cell;
-    let cellElement = document.createElement("div");
+    let cellElement: HTMLDivElement = document.createElement("div");
     cellElement.classList.add("cell");
-    cellElement.style.gridRow = posX + 1;
-    cellElement.style.gridColumn = posY + 1;
+    cellElement.style.gridRow = (posX + 1).toString();
+    cellElement.style.gridColumn = (posY + 1).toString();
     cellElement.id = `cell-${cell.id}`;
     cellElement = this.renderWalls(cellElement, walls);
     if (cell.entrance) cellElement.classList.add("entrance");
@@ -45,14 +45,14 @@ export class MazeRenderer {
     this.canvas.appendChild(cellElement);
   }
 
-  pinCells(path) {
+  pinCells(path: Cell) {
     while (path.previous) {
       this.pinCell(path);
       path = path.previous;
     }
   }
 
-  pinCell(cell) {
+  pinCell(cell: Cell) {
     if (cell.entrance || cell.exit) return;
     const cellElement = document.querySelector(`#cell-${cell.id}`) as HTMLDivElement;
     cellElement.style.backgroundImage = "radial-gradient(closest-side at 50%, darkgrey, transparent)";

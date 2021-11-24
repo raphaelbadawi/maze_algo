@@ -9,7 +9,7 @@
     export let selectionIndex: number;
 
     // make sure a new map has been fetched from the maps object before displaying any map
-    let mapFetched = false;
+    let mapFetched: boolean = false;
 
     let currentMap: Cell[] = [];
     let maps: Promise<{}> = new Promise(() => {});
@@ -17,10 +17,18 @@
 
     const dispatchMapsChoices = createEventDispatcher();
 
-    const displayMaze = (): void => {
-        const currentChoice = document.querySelector(".mapSelector li.selected").innerHTML;
-        const [dim, ex]: RegExpMatchArray = currentChoice.match(/\d+/g);
-        currentMap = maps[dim]["ex-" + ex];
+    const displayMaze = (index = -1): void => {
+        let currentChoiceElement: HTMLDivElement = document.querySelector(".mapSelector li.selected");
+        if (index >= 0) {
+            triggerMap = !triggerMap;
+            currentChoiceElement = document.querySelector(`#map-${index}`);
+            selectionIndex = index;
+        }
+        if (currentChoiceElement) {
+            let currentChoice: string = currentChoiceElement.innerHTML;
+            const [dim, ex]: RegExpMatchArray = currentChoice.match(/\d+/g);
+            currentMap = maps[dim]["ex-" + ex];
+        }
         mapFetched = true;
     }
 
@@ -33,10 +41,10 @@
     };
 
     afterUpdate(() => {
-        mapFetched = false;
+        if (!triggerMap) mapFetched = false;
         const selectedItem = document.querySelector(".mapSelector li.selected");
         if (!selectedItem) return;
-        document.querySelector(".mapSelector li.selected").scrollIntoView();
+        document.querySelector(".mapSelector li.selected").scrollIntoView({ behavior: "smooth" });
         if (triggerMap) displayMaze();
     });
 
@@ -47,14 +55,14 @@
             return;
         }
         maps = await Promise.resolve(await res.json());
-        dispatchMapsChoices('keyHandleChanged', {
+        dispatchMapsChoices('keyboardHandlerChanged', {
             choices: mapsChoices
         });
         stringifyMapsChoices();
     });
 
     onDestroy(() => {
-        dispatchMapsChoices('keyHandleChanged', {
+        dispatchMapsChoices('keyboardHandlerChanged', {
             choices: false
         });
     });
@@ -64,13 +72,13 @@
     {#await maps}
     <div class="maze">Loading...</div>
     {:then}
-        {#if triggerMap && currentMap.length && mapFetched}
-            <Map map={currentMap}/>
+        {#if currentMap.length && mapFetched}
+            <Map map={currentMap} on:mapClicked="{e => displayMaze(selectionIndex)}"/>
         {:else}
             <div class="maze">Choose wisely</div>
             <ul class="mapSelector">
                 {#each mapsChoices as choice, index (choice)}
-                    <li class="{index == selectionIndex ? "selected" : ""}" on:click="{ e => displayMaze() }">{ choice }</li>
+                    <li id="map-{index}" class="{index == selectionIndex ? "selected" : ""}" on:click="{e => displayMaze(index)}">{ choice }</li>
                 {/each}
             </ul>
         {/if}
@@ -88,7 +96,15 @@
     }
     .mapSelector {
         height: calc(100vh - 500px);
-        overflow: scroll;
+        overflow-y: scroll;
+        scrollbar-width: thin;
+    }
+    .mapSelector::-webkit-scrollbar {
+        width: 6px;
+        background-color: white;
+    }
+    .mapSelector::-webkit-scrollbar-thumb {
+        background-color: teal;
     }
     .mapSelector li {
         cursor: pointer;

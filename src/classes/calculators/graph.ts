@@ -1,26 +1,24 @@
+import { Algos } from "../../enums/enums";
+import type { Cell } from "../../types/types";
+import type { MazeRenderer } from "../renderers/maze";
+
 export class MazeGraph {
-  constructor(map, board) {
+  map: Cell[];
+  board: MazeRenderer;
+  algoToHandler = { [Algos.DFS]: "calcDFSSolution", [Algos.BFS]: "calcBFSSolution", [Algos.ASTAR]: "calcAStarSolution" };
+  constructor(map: Cell[], board: MazeRenderer) {
     this.map = map;
     this.board = board;
   }
 
-  seed() {
+  seed(algo: Algos) {
     const startPoint = this.map.find((cell) => cell.entrance);
-
-    // exec iterative deep search
-    const path = this.buildPathIterative(startPoint);
+    const path = this[this.algoToHandler[algo]](startPoint);
     this.board.pinCells(path);
-
-    // // exec recursive deep search
-    // const path = this.buildPathRecursive(startPoint);
-    // if (path) return;
-    // this.clearMap();
-    // this.board.clearBoard();
-    // this.seed();
   }
 
   /** Get available moves from current instance of the map */
-  getAvailableMoves(startPoint) {
+  getAvailableMoves(startPoint: Cell) {
     const {
       posX: currentPosX,
       posY: currentPosY,
@@ -46,8 +44,7 @@ export class MazeGraph {
     });
   }
 
-  /** Iterative deep search with propagation on all possible paths */
-  buildPathIterative(startPoint) {
+  calcDFSSolution(startPoint: Cell) {
     let stack = [startPoint];
     while (stack.length > 0) {
       const currentPoint = stack.pop();
@@ -64,17 +61,19 @@ export class MazeGraph {
     return false;
   }
 
-  /** Recursive deep search with multiple tries on random paths */
-  buildPathRecursive(startPoint) {
-    this.map[startPoint.id].visited = true;
-    const availableMoves = this.getAvailableMoves(startPoint);
-    if (availableMoves.length > 0) {
-      const nextPoint = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-      if (nextPoint.exit) return nextPoint;
-      if (nextPoint.visited) this.buildPath(startPoint);
-      this.board.pinCell(nextPoint);
-      this.map[startPoint.id].previous = startPoint;
-      return this.buildPath(nextPoint);
+  calcBFSSolution(startPoint: Cell) {
+    let queue = [startPoint];
+    while (queue.length > 0) {
+      const currentPoint = queue.shift();
+      this.map[currentPoint.id].visited = true;
+      if (currentPoint.exit) return currentPoint;
+      const availableMoves = this.getAvailableMoves(currentPoint);
+      for (const availableMove of availableMoves) {
+        if (!availableMove.visited) {
+          availableMove.previous = currentPoint;
+          queue.push(availableMove);
+        }
+      }
     }
     return false;
   }
