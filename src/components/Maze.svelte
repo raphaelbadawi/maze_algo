@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { onMount, onDestroy, afterUpdate } from "svelte";
+    import { onMount, onDestroy, afterUpdate, tick } from "svelte";
     import { createEventDispatcher } from 'svelte';
     import { MazeGenerator } from "../classes/generators/maze";
-    import type { Cell } from "../types/types";
+    import type { CalculableCell } from "../types/types";
 
     import Map from "./Map.svelte";
+    import Modal from "./Modal.svelte";
 
     export let triggerMap: boolean;
     export let selectionIndex: number;
@@ -12,15 +13,20 @@
     // make sure a new map has been fetched from the maps object before displaying any map
     let mapFetched: boolean = false;
 
-    let currentMap: Cell[] = [];
+    let currentMap: CalculableCell[] = [];
     let maps: Promise<{}> = new Promise(() => {});
     let mapsChoices: string[] = [];
+    let showModal: boolean = false;
+    let mazeSize: number = 3;
 
     const dispatchMapsChoices = createEventDispatcher();
 
     const randomMazeHandler = () => {
-        /** @todo */
-        const mazeGenerator: MazeGenerator = new MazeGenerator(4, 4);
+        showModal = true;
+    }
+
+    const displayRandomMaze = () => {
+        const mazeGenerator: MazeGenerator = new MazeGenerator(mazeSize, mazeSize);
         currentMap = mazeGenerator.map;
         triggerMap = true;
         mapFetched = true;
@@ -49,11 +55,12 @@
         }
     };
 
-    afterUpdate(() => {
+    afterUpdate(async () => {
         if (!triggerMap) mapFetched = false;
+        await tick();
         const selectedItem = document.querySelector(".mapSelector li.selected");
         if (!selectedItem) return;
-        document.querySelector(".mapSelector li.selected").scrollIntoView({ behavior: "smooth" });
+        selectedItem.scrollIntoView({ behavior: "smooth", block: "center" });
         if (triggerMap) displayMaze();
     });
 
@@ -95,6 +102,9 @@
     {:catch error}
     <div class="error">Error: { error }</div>
     {/await}
+    {#if showModal}
+        <Modal on:modalClosed="{e => showModal = false}" on:generateMaze="{e => { showModal = false; mazeSize = e.detail.mazeSize; displayRandomMaze() }}" />
+    {/if}
 </div>
 
 <style>

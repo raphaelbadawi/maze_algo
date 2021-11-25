@@ -1,10 +1,10 @@
-import type { Cell } from "../../types/types";
+import type { CalculableCell } from "../../types/types";
 
 export class MazeRenderer {
-  map: Cell[];
+  map: CalculableCell[];
   canvas: HTMLDivElement;
 
-  constructor(map: Cell[]) {
+  constructor(map: CalculableCell[]) {
     this.map = map;
     const { colsCount, rowsCount } = this.getCanvasDimensions();
     this.canvas = this.renderCanvas(colsCount, rowsCount);
@@ -33,7 +33,7 @@ export class MazeRenderer {
     return cellElement;
   }
 
-  renderCell(cell: Cell) {
+  renderCell(cell: CalculableCell) {
     const { posX, posY, walls } = cell;
     let cellElement: HTMLDivElement = document.createElement("div");
     cellElement.classList.add("cell");
@@ -46,14 +46,14 @@ export class MazeRenderer {
     this.canvas.appendChild(cellElement);
   }
 
-  pinCells(path: Cell) {
+  pinCells(path: CalculableCell) {
     while (path.previous) {
       this.pinCell(path);
       path = path.previous;
     }
   }
 
-  pinCell(cell: Cell) {
+  pinCell(cell: CalculableCell) {
     if (cell.entrance || cell.exit) return;
     const cellElement = document.querySelector(`#cell-${cell.id}`) as HTMLDivElement;
     cellElement.style.backgroundImage = "radial-gradient(closest-side at 50%, darkgrey, transparent)";

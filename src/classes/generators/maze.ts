@@ -1,9 +1,10 @@
-import type { Cell } from "../../types/types";
+import type { CalculableCell } from "../../types/types";
+import { MazeHelper } from "../helpers/maze";
 
 export class MazeGenerator {
     width: number;
     height: number;
-    map: Cell[] = [];
+    map: CalculableCell[] = [];
 
     constructor(width: number, height: number) {
         // we start with walls everywhere
@@ -24,27 +25,38 @@ export class MazeGenerator {
         this.breakWalls();
     }
 
-    private carve(cell: Cell) {
+    private carve(cell: CalculableCell) {
         const previousCell = cell.previous;
-        if (previousCell.posY < cell.posY) this.map[cell.id].walls[0] = false;
-        if (previousCell.posX < cell.posX) this.map[cell.id].walls[1] = false;
-        if (previousCell.posY > cell.posY) this.map[cell.id].walls[2] = false;
-        if (previousCell.posX > cell.posX) this.map[cell.id].walls[3] = false;
+        if (previousCell.posX < cell.posX) {
+            this.map[cell.id].walls[0] = false;
+            this.map[previousCell.id].walls[2] = false;
+        }
+        if (previousCell.posY > cell.posY) {
+            this.map[cell.id].walls[1] = false;
+            this.map[previousCell.id].walls[3] = false;
+        }
+        if (previousCell.posX > cell.posX) {
+            this.map[cell.id].walls[2] = false;
+            this.map[previousCell.id].walls[0] = false;
+        }
+        if (previousCell.posY < cell.posY) {
+            this.map[cell.id].walls[3] = false;
+            this.map[previousCell.id].walls[1] = false;
+        }
     }
 
-    private breakWalls(startCell: Cell = this.map[Math.floor(Math.random() * this.map.length)]) {
-        const queue: Cell[] = [startCell];
-        while (queue.length > 0) {
-            let currentCell = queue.shift();
-            const nextCells: Cell[] = [
-                this.map.find(cell => cell.posX == currentCell.posX + 1),
-                this.map.find(cell => cell.posX == currentCell.posX - 1),
-                this.map.find(cell => cell.posX == currentCell.posY + 1),
-                this.map.find(cell => cell.posX == currentCell.posY - 1),
-            ].filter(e => e !== undefined);
-            const nextCell: Cell = nextCells[Math.floor(Math.random() * nextCells.length)];
-            nextCell.previous = currentCell;
-            this.carve(nextCell);
-        }
+    private breakWalls(currentCell: CalculableCell = this.map[Math.floor(Math.random() * this.map.length)]) {
+        this.map[currentCell.id].visited = true;
+        let carveCandidates: CalculableCell[] = [];
+        do {
+            const nextCandidates: CalculableCell[] = MazeHelper.getAvailableMoves(this.map, currentCell, true).filter(cell => !carveCandidates.includes(cell));
+            nextCandidates.forEach(cell => cell.previous = currentCell);
+            carveCandidates.push(...nextCandidates);
+            let carveCandidate: CalculableCell = carveCandidates[Math.floor(Math.random() * carveCandidates.length)];
+            this.map[carveCandidate.id].visited = true;
+            carveCandidates = carveCandidates.filter(e => e != carveCandidate);
+            this.carve(carveCandidate);
+            currentCell = carveCandidate;
+        } while (carveCandidates.length > 0);
     }
 }

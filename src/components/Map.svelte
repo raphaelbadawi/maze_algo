@@ -1,18 +1,19 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import { MazeGraph } from "../classes/calculators/graph";
+    import { MazeHelper } from "../classes/helpers/maze";
     import { MazeRenderer } from "../classes/renderers/maze";
     import { Algos } from "../enums/enums";
-    import type { Cell } from "../types/types";
+    import type { CalculableCell } from "../types/types";
 
-    export let map: Cell[];
+    export let map: CalculableCell[];
 
     let board: MazeRenderer;
     let R2D2: MazeGraph;
 
     const fullMazeClean = () => {
         board.clearBoard();
-        R2D2.clearMap();
+        map = MazeHelper.clearMap(map);
     };
 
     const showMazeSolution = (algo: Algos) => {

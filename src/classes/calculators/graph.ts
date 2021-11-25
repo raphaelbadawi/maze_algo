@@ -1,16 +1,17 @@
 import { Algos } from "../../enums/enums";
-import type { Cell } from "../../types/types";
+import type { CalculableCell } from "../../types/types";
+import { MazeHelper } from "../helpers/maze";
 import type { MazeRenderer } from "../renderers/maze";
 
 export class MazeGraph {
-  map: Cell[];
+  map: CalculableCell[];
   board: MazeRenderer;
   algoToHandler = { [Algos.DFS]: "calcDFSSolution", [Algos.BFS]: "calcBFSSolution", [Algos.ASTAR]: "calcAStarSolution" };
-  startPoint: Cell;
-  endPoint: Cell;
+  startPoint: CalculableCell;
+  endPoint: CalculableCell;
   maxHeuristic: number;
 
-  constructor(map: Cell[], board: MazeRenderer) {
+  constructor(map: CalculableCell[], board: MazeRenderer) {
     this.map = map;
     this.board = board;
   }
@@ -22,38 +23,11 @@ export class MazeGraph {
     this.board.pinCells(path);
   }
 
-  /** Get available moves from current instance of the map */
-  private getAvailableMoves(startPoint: Cell) {
-    const {
-      posX: currentPosX,
-      posY: currentPosY,
-      walls: currentWalls,
-    } = startPoint;
-    return this.map.filter((cell) => {
-      if (cell.visited) return false;
-      if (
-        (!currentWalls[0] &&
-          cell.posX == currentPosX - 1 &&
-          cell.posY == currentPosY) ||
-        (!currentWalls[1] &&
-          cell.posY == currentPosY + 1 &&
-          cell.posX == currentPosX) ||
-        (!currentWalls[2] &&
-          cell.posX == currentPosX + 1 &&
-          cell.posY == currentPosY) ||
-        (!currentWalls[3] &&
-          cell.posY == currentPosY - 1 &&
-          cell.posX == currentPosX)
-      )
-        return cell;
-    });
-  }
-
-  private calcDFSSolution(currentPoint: Cell = this.startPoint) {
+  private calcDFSSolution(currentPoint: CalculableCell = this.startPoint) {
     if (currentPoint.visited) return false;
     this.map[currentPoint.id].visited = true;
     if (currentPoint.exit) return currentPoint;
-    const availableMoves = this.getAvailableMoves(currentPoint);
+    const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
     for (const availableMove of availableMoves) {
       availableMove.previous = currentPoint;
       const path = this.calcDFSSolution(availableMove);
@@ -68,7 +42,7 @@ export class MazeGraph {
       const currentPoint = queue.shift();
       this.map[currentPoint.id].visited = true;
       if (currentPoint.exit) return currentPoint;
-      const availableMoves = this.getAvailableMoves(currentPoint);
+      const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
       for (const availableMove of availableMoves) {
         if (availableMove.visited) continue;
         availableMove.previous = currentPoint;
@@ -78,13 +52,13 @@ export class MazeGraph {
     return false;
   }
 
-  private calcHeuristic(referencePoint: Cell) {
+  private calcHeuristic(referencePoint: CalculableCell) {
     const { posX: endPosX, posY: endPosY } = this.endPoint;
     const { posX: refPosX, posY: refPosY } = referencePoint;
     return Math.abs(endPosX - refPosX) + Math.abs(endPosY - refPosY);
   }
 
-  private calcPathCost(referencePath: Cell) {
+  private calcPathCost(referencePath: CalculableCell) {
     let pathCost = 0;
     while (referencePath.previous) {
       pathCost ++;
@@ -95,13 +69,13 @@ export class MazeGraph {
 
   private calcAStarSolution() {
     this.startPoint.score = this.calcHeuristic(this.startPoint);
-    let queue: Cell[] = [this.startPoint];
+    let queue: CalculableCell[] = [this.startPoint];
     while (queue.length > 0) {
-      const currentPoint: Cell = queue.length == 1 ? queue[0] : queue.reduce((p, c) => p.score < c.score ? p : c);
+      const currentPoint: CalculableCell = queue.length == 1 ? queue[0] : queue.reduce((p, c) => p.score < c.score ? p : c);
       queue = queue.filter((cell) => cell !== currentPoint);
       this.map[currentPoint.id].visited = true;
       if (currentPoint.exit) return currentPoint;
-      const availableMoves = this.getAvailableMoves(currentPoint);
+      const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
       for (const availableMove of availableMoves) {
         if (availableMove.visited) continue;
         availableMove.previous = currentPoint;
@@ -112,12 +86,5 @@ export class MazeGraph {
         queue.push(availableMove);
       }
     }
-  }
-
-  clearMap() {
-    this.map.forEach((cell) => {
-      cell.visited = false;
-      cell.previous = null;
-    });
   }
 }
