@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { MazeGraph } from "../classes/calculators/graph";
     import { MazeHelper } from "../classes/helpers/maze";
     import { MazeRenderer } from "../classes/renderers/maze";
@@ -10,6 +10,18 @@
 
     let board: MazeRenderer;
     let R2D2: MazeGraph;
+    let stepDisplay: false;
+    let currentPath: CalculableCell;
+
+    const incrementPath = () => {
+        if (!currentPath.previous) return;
+        board.pinCell(currentPath);
+        currentPath = currentPath.previous;
+    };
+
+    const pathSequenceListener = (e) => {
+        if (e.key == " ") incrementPath();
+    }
 
     const fullMazeClean = () => {
         board.clearBoard();
@@ -18,7 +30,13 @@
 
     const showMazeSolution = (algo: Algos) => {
         fullMazeClean();
-        R2D2.seed(algo);
+        currentPath = R2D2.calc(algo);
+        if (stepDisplay) {
+            incrementPath();
+            window.addEventListener("keydown", pathSequenceListener);
+            return;
+        }
+        board.pinCells(currentPath);
     };
 
     const dispatchClickOnMapEvent = createEventDispatcher();
@@ -36,12 +54,15 @@
 
         R2D2 = new MazeGraph(map, board);
     });
+
+    onDestroy(() => window.removeEventListener("keydown", pathSequenceListener));
 </script>
 <div class="btn-group">
     {#each Object.keys(Algos).map(k => Algos[k]) as algo}
         <button on:click="{e => showMazeSolution(algo)}">{ algo }</button>
     {/each}
     <button on:click="{fullMazeClean}">Remove thread</button>
+    <label class="mapCheckbox"><input type="checkbox" bind:checked="{stepDisplay}"><span>Display by step</span></label>
 </div>
 <div id="currentMap" on:click="{e => dispatchClickOnMapEvent('mapClicked')}"></div>
 
@@ -61,6 +82,18 @@
     }
     .btn-group button:hover {
         background-color: #00bcd4;
+    }
+    .mapCheckbox {
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .mapCheckbox > input {
+        filter: invert(100%);
+    }
+    .mapCheckbox > span {
+        line-height: 1.5rem;
     }
     #currentMap {
         display: flex;

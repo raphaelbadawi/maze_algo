@@ -16,11 +16,10 @@ export class MazeGraph {
     this.board = board;
   }
 
-  seed(algo: Algos) {
+  calc(algo: Algos) {
     this.startPoint = this.map.find((cell) => cell.entrance);
     this.endPoint = this.map.find((cell) => cell.exit);
-    const path = this[this.algoToHandler[algo]]();
-    this.board.pinCells(path);
+    return this[this.algoToHandler[algo]]();
   }
 
   private calcDFSSolution(currentPoint: CalculableCell = this.startPoint) {

@@ -75,6 +75,7 @@
             choices: mapsChoices
         });
         stringifyMapsChoices();
+        currentMap = maps["25"]["ex-2"];
     });
 
     onDestroy(() => {

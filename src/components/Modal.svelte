@@ -40,6 +40,7 @@
         padding: 0.5rem 1rem;
     }
     .modalButton {
+        cursor: pointer;
         position: absolute;
         bottom: 3rem;
         left: 50%;
