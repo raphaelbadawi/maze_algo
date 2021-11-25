@@ -43,10 +43,12 @@ export class MazeRenderer {
     cellElement = this.renderWalls(cellElement, walls);
     if (cell.entrance) cellElement.classList.add("entrance");
     if (cell.exit) cellElement.classList.add("exit");
+    if (cell.trap) cellElement.classList.add("trap");
     this.canvas.appendChild(cellElement);
   }
 
   pinCells(path: CalculableCell) {
+    if (!path) return false;
     while (path.previous) {
       this.pinCell(path);
       path = path.previous;

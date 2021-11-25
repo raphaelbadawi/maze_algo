@@ -120,3 +120,7 @@ li {
 .exit {
   background-image: radial-gradient(closest-side at 50%, red, transparent);
 }
+
+.trap {
+  background-image: radial-gradient(closest-side at 50%, darkorange, transparent);
+}

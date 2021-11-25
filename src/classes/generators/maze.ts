@@ -18,9 +18,24 @@ export class MazeGenerator {
             }
         }
         this.map.forEach((cell, index) => cell.id = index);
+
         // random end and start point
-        this.map[Math.floor(Math.random() * this.map.length)].entrance = true;
-        this.map[Math.floor(Math.random() * this.map.length)].exit = true;
+        const startIndex: number = Math.floor(Math.random() * this.map.length);
+        this.map[startIndex].entrance = true;
+
+        let endIndex: number; 
+        do {
+            endIndex = Math.floor(Math.random() * this.map.length);
+        } while (endIndex == startIndex);
+        this.map[endIndex].exit = true;
+
+        const trapsIndexes: number[] = [];
+        for (let i = 0; i < width; i++) {
+            do {
+                trapsIndexes[i] = Math.floor(Math.random() * this.map.length);
+            } while (trapsIndexes[i] == startIndex || trapsIndexes[i] == endIndex || trapsIndexes.filter((_, trapI) => trapI !== i).includes(trapsIndexes[i]));
+        }
+       for (const trapIndex of trapsIndexes) this.map[trapIndex].trap = true;
         // BREAKING THE WALL(S)
         this.breakWalls();
     }

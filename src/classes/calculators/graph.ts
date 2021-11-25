@@ -23,7 +23,7 @@ export class MazeGraph {
   }
 
   private calcDFSSolution(currentPoint: CalculableCell = this.startPoint) {
-    if (currentPoint.visited) return false;
+    if (currentPoint.visited || currentPoint.trap) return false;
     this.map[currentPoint.id].visited = true;
     if (currentPoint.exit) return currentPoint;
     const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
@@ -43,7 +43,7 @@ export class MazeGraph {
       if (currentPoint.exit) return currentPoint;
       const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
       for (const availableMove of availableMoves) {
-        if (availableMove.visited) continue;
+        if (availableMove.visited || availableMove.trap) continue;
         availableMove.previous = currentPoint;
         queue.push(availableMove);
       }
@@ -76,7 +76,7 @@ export class MazeGraph {
       if (currentPoint.exit) return currentPoint;
       const availableMoves = MazeHelper.getAvailableMoves(this.map, currentPoint);
       for (const availableMove of availableMoves) {
-        if (availableMove.visited) continue;
+        if (availableMove.visited || availableMove.trap) continue;
         availableMove.previous = currentPoint;
         const cost: number = this.calcPathCost(availableMove);
         const heuristic: number = this.calcHeuristic(availableMove);

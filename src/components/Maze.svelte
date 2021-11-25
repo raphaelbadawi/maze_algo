@@ -18,6 +18,7 @@
     let mapsChoices: string[] = [];
     let showModal: boolean = false;
     let mazeSize: number = 3;
+    let hasTraps: boolean = false;
 
     const dispatchMapsChoices = createEventDispatcher();
 
@@ -60,7 +61,7 @@
         await tick();
         const selectedItem = document.querySelector(".mapSelector li.selected");
         if (!selectedItem) return;
-        selectedItem.scrollIntoView({ behavior: "smooth", block: "center" });
+        selectedItem.scrollIntoView({ block: "center" });
         if (triggerMap) displayMaze();
     });
 
@@ -104,7 +105,7 @@
     <div class="error">Error: { error }</div>
     {/await}
     {#if showModal}
-        <Modal on:modalClosed="{e => showModal = false}" on:generateMaze="{e => { showModal = false; mazeSize = e.detail.mazeSize; displayRandomMaze() }}" />
+        <Modal mazeSize={mazeSize} hasTraps={hasTraps} on:modalClosed="{e => showModal = false}" on:generateMaze="{e => { showModal = false; mazeSize = e.detail.mazeSize; hasTraps = e.detail.hasTraps; displayRandomMaze() }}" />
     {/if}
 </div>
 

@@ -5,6 +5,7 @@ export interface AbstractCell {
     walls: boolean[],
     entrance?: boolean;
     exit?: boolean;
+    trap?: boolean;
 }
 
 export interface CalculableCell extends AbstractCell {

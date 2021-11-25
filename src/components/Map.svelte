@@ -14,7 +14,8 @@
     let currentPath: CalculableCell;
 
     const incrementPath = () => {
-        if (!currentPath.previous) return;
+        if (!currentPath) return false;
+        if (!currentPath.previous) return true;
         board.pinCell(currentPath);
         currentPath = currentPath.previous;
     };

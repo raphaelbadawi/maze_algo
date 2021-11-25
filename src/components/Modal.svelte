@@ -1,21 +1,25 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     const dispatchCloseModalEvent = createEventDispatcher();
-    let mazeSize: number = 3;
+    export let mazeSize: number;
+    export let hasTraps: boolean;
 </script>
 
 <div class="backdrop">
     <div class="modalContainer">
         <span on:click="{e =>  dispatchCloseModalEvent('modalClosed')}" class="modalCross">&times;</span>
         <h2>Select Maze Size</h2>
-        <select class="modalSelect" bind:value="{mazeSize}">
-            {#each Array(26) as _, i}
-                {#if i > 2}
-                    <option value="{i}">{i}</option>
-                {/if}
-            {/each}
-        </select>
-        <button class="modalButton" on:click="{e => dispatchCloseModalEvent('generateMaze', { mazeSize })}">Generate Maze</button>
+        <div class="modalSelect">
+            <select bind:value="{mazeSize}">
+                {#each Array(26) as _, i}
+                    {#if i > 2}
+                        <option value="{i}">{i}</option>
+                    {/if}
+                {/each}
+            </select>
+            <label class="modalCheckbox"><input type="checkbox" bind:checked="{hasTraps}"><span>Add traps</span></label>
+        </div>
+        <button class="modalButton" on:click="{e => dispatchCloseModalEvent('generateMaze', { mazeSize, hasTraps })}">Generate Maze</button>
     </div>
 </div>
 
@@ -35,9 +39,24 @@
     }
     .modalSelect {
         position: relative;
-        display: block;
+        display: flex;
+        width: max-content;
+        gap: 2rem;
         margin: auto;
         padding: 0.5rem 1rem;
+    }
+    /** @todo refactor checkboxes as a reusable component */
+    .modalCheckbox {
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .modalCheckbox > input {
+        filter: invert(100%);
+    }
+    .modalCheckbox > span {
+        line-height: 1.5rem;
     }
     .modalButton {
         cursor: pointer;
