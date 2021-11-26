@@ -1,17 +1,17 @@
 import { Algos } from "../../enums/enums";
-import type { CalculableCell } from "../../types/types";
+import type { MazeCell } from "../../types/types";
 import { MazeHelper } from "../helpers/maze";
 import type { MazeRenderer } from "../renderers/maze";
 
 export class MazeGraph {
-  map: CalculableCell[];
+  map: MazeCell[];
   board: MazeRenderer;
   algoToHandler = { [Algos.DFS]: "calcDFSSolution", [Algos.BFS]: "calcBFSSolution", [Algos.ASTAR]: "calcAStarSolution" };
-  startPoint: CalculableCell;
-  endPoint: CalculableCell;
+  startPoint: MazeCell;
+  endPoint: MazeCell;
   maxHeuristic: number;
 
-  constructor(map: CalculableCell[], board: MazeRenderer) {
+  constructor(map: MazeCell[], board: MazeRenderer) {
     this.map = map;
     this.board = board;
   }
@@ -22,7 +22,7 @@ export class MazeGraph {
     return this[this.algoToHandler[algo]]();
   }
 
-  private calcDFSSolution(currentPoint: CalculableCell = this.startPoint) {
+  private calcDFSSolution(currentPoint: MazeCell = this.startPoint) {
     if (currentPoint.visited || currentPoint.trap) return false;
     this.map[currentPoint.id].visited = true;
     if (currentPoint.exit) return currentPoint;
@@ -51,13 +51,13 @@ export class MazeGraph {
     return false;
   }
 
-  private calcHeuristic(referencePoint: CalculableCell) {
+  private calcHeuristic(referencePoint: MazeCell) {
     const { posX: endPosX, posY: endPosY } = this.endPoint;
     const { posX: refPosX, posY: refPosY } = referencePoint;
     return Math.abs(endPosX - refPosX) + Math.abs(endPosY - refPosY);
   }
 
-  private calcPathCost(referencePath: CalculableCell) {
+  private calcPathCost(referencePath: MazeCell) {
     let pathCost = 0;
     while (referencePath.previous) {
       pathCost ++;
@@ -68,9 +68,9 @@ export class MazeGraph {
 
   private calcAStarSolution() {
     this.startPoint.score = this.calcHeuristic(this.startPoint);
-    let queue: CalculableCell[] = [this.startPoint];
+    let queue: MazeCell[] = [this.startPoint];
     while (queue.length > 0) {
-      const currentPoint: CalculableCell = queue.length == 1 ? queue[0] : queue.reduce((p, c) => p.score < c.score ? p : c);
+      const currentPoint: MazeCell = queue.length == 1 ? queue[0] : queue.reduce((p, c) => p.score < c.score ? p : c);
       queue = queue.filter((cell) => cell !== currentPoint);
       this.map[currentPoint.id].visited = true;
       if (currentPoint.exit) return currentPoint;

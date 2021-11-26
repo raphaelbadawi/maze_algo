@@ -1,27 +1,12 @@
-import type { CalculableCell } from "../../types/types";
+import type { MazeCell } from "../../types/types";
+import { Renderer } from "./renderer";
 
-export class MazeRenderer {
-  map: CalculableCell[];
+export class MazeRenderer extends Renderer {
+  map: MazeCell[];
   canvas: HTMLDivElement;
 
-  constructor(map: CalculableCell[]) {
-    this.map = map;
-    const { colsCount, rowsCount } = this.getCanvasDimensions();
-    this.canvas = this.renderCanvas(colsCount, rowsCount);
-  }
-
-  private getCanvasDimensions() {
-    const colsCount: number = Math.max(...this.map.map((cell) => cell.posX)) + 1;
-    const rowsCount: number = Math.max(...this.map.map((cell) => cell.posY)) + 1;
-    return { colsCount, rowsCount };
-  }
-
-  private renderCanvas(colsCount: number, rowsCount: number) {
-    const canvas: HTMLDivElement = document.createElement("div");
-    canvas.classList.add("canvas");
-    canvas.style.gridTemplateColumns = `repeat(${colsCount.toString()}, 1fr)`;
-    canvas.style.gridTemplateRows = `repeat(${rowsCount.toString()}, 1fr)`;
-    return canvas;
+  constructor(map: MazeCell[]) {
+    super (map);
   }
 
   private renderWalls(cellElement: HTMLDivElement, walls: boolean[]) {
@@ -33,7 +18,7 @@ export class MazeRenderer {
     return cellElement;
   }
 
-  renderCell(cell: CalculableCell) {
+  renderCell(cell: MazeCell) {
     const { posX, posY, walls } = cell;
     let cellElement: HTMLDivElement = document.createElement("div");
     cellElement.classList.add("cell");
@@ -47,7 +32,7 @@ export class MazeRenderer {
     this.canvas.appendChild(cellElement);
   }
 
-  pinCells(path: CalculableCell) {
+  pinCells(path: MazeCell) {
     if (!path) return false;
     while (path.previous) {
       this.pinCell(path);
@@ -55,7 +40,7 @@ export class MazeRenderer {
     }
   }
 
-  pinCell(cell: CalculableCell) {
+  pinCell(cell: MazeCell) {
     if (cell.entrance || cell.exit) return;
     const cellElement = document.querySelector(`#cell-${cell.id}`) as HTMLDivElement;
     cellElement.style.backgroundImage = "radial-gradient(closest-side at 50%, darkgrey, transparent)";

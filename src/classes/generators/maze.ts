@@ -1,10 +1,10 @@
-import type { CalculableCell } from "../../types/types";
+import type { MazeCell } from "../../types/types";
 import { MazeHelper } from "../helpers/maze";
 
 export class MazeGenerator {
     width: number;
     height: number;
-    map: CalculableCell[] = [];
+    map: MazeCell[] = [];
 
     constructor(width: number, height: number) {
         // we start with walls everywhere
@@ -30,17 +30,18 @@ export class MazeGenerator {
         this.map[endIndex].exit = true;
 
         const trapsIndexes: number[] = [];
-        for (let i = 0; i < width; i++) {
+        for (let i = 0; i < Math.floor(width / 2); i++) {
             do {
                 trapsIndexes[i] = Math.floor(Math.random() * this.map.length);
             } while (trapsIndexes[i] == startIndex || trapsIndexes[i] == endIndex || trapsIndexes.filter((_, trapI) => trapI !== i).includes(trapsIndexes[i]));
         }
-       for (const trapIndex of trapsIndexes) this.map[trapIndex].trap = true;
+        for (const trapIndex of trapsIndexes) this.map[trapIndex].trap = true;
+
         // BREAKING THE WALL(S)
         this.breakWalls();
     }
 
-    private carve(cell: CalculableCell) {
+    private carve(cell: MazeCell) {
         const previousCell = cell.previous;
         if (previousCell.posX < cell.posX) {
             this.map[cell.id].walls[0] = false;
@@ -60,14 +61,14 @@ export class MazeGenerator {
         }
     }
 
-    private breakWalls(currentCell: CalculableCell = this.map[Math.floor(Math.random() * this.map.length)]) {
+    private breakWalls(currentCell: MazeCell = this.map[Math.floor(Math.random() * this.map.length)]) {
         this.map[currentCell.id].visited = true;
-        let carveCandidates: CalculableCell[] = [];
+        let carveCandidates: MazeCell[] = [];
         do {
-            const nextCandidates: CalculableCell[] = MazeHelper.getAvailableMoves(this.map, currentCell, true).filter(cell => !carveCandidates.includes(cell));
+            const nextCandidates: MazeCell[] = MazeHelper.getAvailableMoves(this.map, currentCell, true).filter(cell => !carveCandidates.includes(cell));
             nextCandidates.forEach(cell => cell.previous = currentCell);
             carveCandidates.push(...nextCandidates);
-            let carveCandidate: CalculableCell = carveCandidates[Math.floor(Math.random() * carveCandidates.length)];
+            let carveCandidate: MazeCell = carveCandidates[Math.floor(Math.random() * carveCandidates.length)];
             this.map[carveCandidate.id].visited = true;
             carveCandidates = carveCandidates.filter(e => e != carveCandidate);
             this.carve(carveCandidate);

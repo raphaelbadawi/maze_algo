@@ -1,1 +1,1 @@
-<h2>Coffee Screen</h2>
+<h2>Slurp</h2>

@@ -1,3 +1,5 @@
+import type { Pawn } from "../enums/enums";
+
 export interface AbstractCell {
     id?: number;
     posX: number;
@@ -8,8 +10,12 @@ export interface AbstractCell {
     trap?: boolean;
 }
 
-export interface CalculableCell extends AbstractCell {
+export interface MazeCell extends AbstractCell {
     visited?: boolean;
-    previous?: CalculableCell;
+    previous?: MazeCell;
     score?: number;
+}
+
+export interface ChecksCell extends AbstractCell {
+    hasPawn?: Pawn;
 }

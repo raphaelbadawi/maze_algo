@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Maze from "./components/Maze.svelte";
-	import MazeVanilla from "./components/MazeVanilla.svelte";
+	import Checks from "./components/Checks.svelte";
 	import Coffee from "./components/Coffee.svelte";
 	import { Screens } from "./enums/enums";
 
@@ -8,14 +8,14 @@
 
 	let screenIndex: number = 0;
 	let currentScreen: string = Screens.MAIN_MENU;
-	let menuItems: string[] = [Screens.MAZE_SCREEN, Screens.MAZE_VANILLA_SCREEN, Screens.COFFEE_SCREEN];
+	let menuItems: string[] = [Screens.MAZE_SCREEN, Screens.CHECKS_SCREEN, Screens.COFFEE_SCREEN];
 
 	const changeMenuSelection = (event: CustomEvent<any>) => {
 		triggerMap = false;
 		screenIndex = 0;
 		if(!event.detail.choices) {
 			currentScreen = Screens.MAIN_MENU;
-			menuItems = [Screens.MAZE_SCREEN, Screens.MAZE_VANILLA_SCREEN, Screens.COFFEE_SCREEN];
+			menuItems = [Screens.MAZE_SCREEN, Screens.CHECKS_SCREEN, Screens.COFFEE_SCREEN];
 			return;
 		}
 		menuItems = event.detail.choices;
@@ -45,8 +45,8 @@
 	{#if currentScreen == Screens.MAZE_SCREEN}
 		<Maze on:keyboardHandlerChanged="{changeMenuSelection}" selectionIndex={screenIndex} triggerMap={triggerMap} />
 	{/if}
-	{#if currentScreen == Screens.MAZE_VANILLA_SCREEN}
-		<MazeVanilla />
+	{#if currentScreen == Screens.CHECKS_SCREEN}
+		<Checks />
 	{/if}
 	{#if currentScreen == Screens.COFFEE_SCREEN}
 		<Coffee />

@@ -4,14 +4,15 @@
     import { MazeHelper } from "../classes/helpers/maze";
     import { MazeRenderer } from "../classes/renderers/maze";
     import { Algos } from "../enums/enums";
-    import type { CalculableCell } from "../types/types";
+    import type { MazeCell } from "../types/types";
+import Checkbox from "./widgets/Checkbox.svelte";
 
-    export let map: CalculableCell[];
+    export let map: MazeCell[];
 
     let board: MazeRenderer;
     let R2D2: MazeGraph;
     let stepDisplay: false;
-    let currentPath: CalculableCell;
+    let currentPath: MazeCell;
 
     const incrementPath = () => {
         if (!currentPath) return false;
@@ -63,7 +64,7 @@
         <button on:click="{e => showMazeSolution(algo)}">{ algo }</button>
     {/each}
     <button on:click="{fullMazeClean}">Remove thread</button>
-    <label class="mapCheckbox"><input type="checkbox" bind:checked="{stepDisplay}"><span>Display by step</span></label>
+    <Checkbox label="Display by step" currentValue={stepDisplay} on:updateValue="{e => stepDisplay = e.detail.currentValue}" />
 </div>
 <div id="currentMap" on:click="{e => dispatchClickOnMapEvent('mapClicked')}"></div>
 
@@ -83,18 +84,6 @@
     }
     .btn-group button:hover {
         background-color: #00bcd4;
-    }
-    .mapCheckbox {
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .mapCheckbox > input {
-        filter: invert(100%);
-    }
-    .mapCheckbox > span {
-        line-height: 1.5rem;
     }
     #currentMap {
         display: flex;

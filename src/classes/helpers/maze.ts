@@ -1,8 +1,8 @@
-import type { CalculableCell } from "../../types/types";
+import type { MazeCell } from "../../types/types";
 
 export class MazeHelper {
     /** Get available moves from an instance of the map */
-    static getAvailableMoves(map: CalculableCell[], startPoint: CalculableCell, ignoreWalls: boolean = false): CalculableCell[] {
+    static getAvailableMoves(map: MazeCell[], startPoint: MazeCell, ignoreWalls: boolean = false): MazeCell[] {
       const {
         posX: currentPosX,
         posY: currentPosY,
@@ -28,7 +28,7 @@ export class MazeHelper {
       });
     }
 
-    static clearMap(map: CalculableCell[]): CalculableCell[] {
+    static clearMap(map: MazeCell[]): MazeCell[] {
         map.forEach(cell => {
             cell.visited = false;
             cell.previous = null;

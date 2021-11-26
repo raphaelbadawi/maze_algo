@@ -2,7 +2,7 @@
     import { onMount, onDestroy, afterUpdate, tick } from "svelte";
     import { createEventDispatcher } from 'svelte';
     import { MazeGenerator } from "../classes/generators/maze";
-    import type { CalculableCell } from "../types/types";
+    import type { MazeCell } from "../types/types";
 
     import Map from "./Map.svelte";
     import Modal from "./Modal.svelte";
@@ -13,7 +13,7 @@
     // make sure a new map has been fetched from the maps object before displaying any map
     let mapFetched: boolean = false;
 
-    let currentMap: CalculableCell[] = [];
+    let currentMap: MazeCell[] = [];
     let maps: Promise<{}> = new Promise(() => {});
     let mapsChoices: string[] = [];
     let showModal: boolean = false;
@@ -105,7 +105,7 @@
     <div class="error">Error: { error }</div>
     {/await}
     {#if showModal}
-        <Modal mazeSize={mazeSize} hasTraps={hasTraps} on:modalClosed="{e => showModal = false}" on:generateMaze="{e => { showModal = false; mazeSize = e.detail.mazeSize; hasTraps = e.detail.hasTraps; displayRandomMaze() }}" />
+        <Modal mazeSize={mazeSize} hasTraps={hasTraps} on:modalClosed="{e => showModal = false}" on:updateHasTraps="{e => hasTraps = e.detail.hasTraps}" on:updateMazeSize="{e => mazeSize = e.detail.mazeSize}" on:generateMaze="{e => { showModal = false; displayRandomMaze() }}" />
     {/if}
 </div>
 
