@@ -5,8 +5,11 @@ export class MazeGenerator {
     width: number;
     height: number;
     map: MazeCell[] = [];
+    helper: MazeHelper;
 
     constructor(width: number, height: number) {
+        this.helper = new MazeHelper();
+
         // we start with walls everywhere
         for (let i = 0; i < width; i++) {
             for (let j = 0; j < height; j++) {
@@ -21,13 +24,13 @@ export class MazeGenerator {
 
         // random end and start point
         const startIndex: number = Math.floor(Math.random() * this.map.length);
-        this.map[startIndex].entrance = true;
+        this.map[startIndex].start = true;
 
         let endIndex: number; 
         do {
             endIndex = Math.floor(Math.random() * this.map.length);
         } while (endIndex == startIndex);
-        this.map[endIndex].exit = true;
+        this.map[endIndex].end = true;
 
         const trapsIndexes: number[] = [];
         for (let i = 0; i < Math.floor(width / 2); i++) {
@@ -62,14 +65,14 @@ export class MazeGenerator {
     }
 
     private breakWalls(currentCell: MazeCell = this.map[Math.floor(Math.random() * this.map.length)]) {
-        this.map[currentCell.id].visited = true;
+        this.map[currentCell.id].treated = true;
         let carveCandidates: MazeCell[] = [];
         do {
-            const nextCandidates: MazeCell[] = MazeHelper.getAvailableMoves(this.map, currentCell, true).filter(cell => !carveCandidates.includes(cell));
+            const nextCandidates: MazeCell[] = this.helper.getAvailableMoves(this.map, currentCell, true).filter(cell => !carveCandidates.includes(cell));
             nextCandidates.forEach(cell => cell.previous = currentCell);
             carveCandidates.push(...nextCandidates);
             let carveCandidate: MazeCell = carveCandidates[Math.floor(Math.random() * carveCandidates.length)];
-            this.map[carveCandidate.id].visited = true;
+            this.map[carveCandidate.id].treated = true;
             carveCandidates = carveCandidates.filter(e => e != carveCandidate);
             this.carve(carveCandidate);
             currentCell = carveCandidate;

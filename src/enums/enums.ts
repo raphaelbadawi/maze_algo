@@ -11,7 +11,7 @@ export enum Algos {
     ASTAR = "A* search",
 }
 
-export enum Pawn {
+export enum PawnColor {
     WHITE = "white",
     BLACK = "black",
 }

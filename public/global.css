@@ -94,6 +94,7 @@ li {
 }
 
 .cell {
+  display: flex;
   border: 1px solid transparent;
 }
 
@@ -113,14 +114,35 @@ li {
   border-left: 1px solid darkgrey;
 }
 
-.entrance {
+.start {
   background-image: radial-gradient(closest-side at 50%, green, transparent);
 }
 
-.exit {
+.end {
   background-image: radial-gradient(closest-side at 50%, red, transparent);
 }
 
 .trap {
   background-image: radial-gradient(closest-side at 50%, darkorange, transparent);
+}
+
+.white {
+  background-color: white;
+}
+
+.black {
+  background-color: darkorange;
+}
+
+.pawn {
+  margin: auto;
+  width: 80%;
+  height: 80%;
+  border-radius: 100%;
+  border : 1px solid black;
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

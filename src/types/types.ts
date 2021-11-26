@@ -1,21 +1,22 @@
-import type { Pawn } from "../enums/enums";
+import type { PawnColor } from "../enums/enums";
 
 export interface AbstractCell {
     id?: number;
     posX: number;
     posY: number;
-    walls: boolean[],
-    entrance?: boolean;
-    exit?: boolean;
-    trap?: boolean;
-}
-
-export interface MazeCell extends AbstractCell {
-    visited?: boolean;
-    previous?: MazeCell;
+    start?: boolean;
+    end?: boolean;
+    treated?: boolean;
+    previous?: AbstractCell;
     score?: number;
 }
 
+export interface MazeCell extends AbstractCell {
+    walls: boolean[],
+    trap?: boolean;
+}
+
 export interface ChecksCell extends AbstractCell {
-    hasPawn?: Pawn;
+    color: PawnColor;
+    hasPawn?: PawnColor;
 }

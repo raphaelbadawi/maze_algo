@@ -25,7 +25,7 @@
 <div class="backdrop">
     <div class="modalContainer">
         <div class="modalHeader" on:mousedown="{moveModal}">
-            <span on:mousedown="{e => { e.stopPropagation(); dispatchModalEvent('modalClosed') }}" class="modalClose">&times;</span>
+            <span on:mousedown|preventDefault|stopPropagation="{e => dispatchModalEvent('modalClosed') }" class="modalClose">&times;</span>
         </div>
         <div class="modalBody">
             <h2>Select Maze Size</h2>

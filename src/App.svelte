@@ -7,7 +7,7 @@
 	let triggerMap: boolean = false;
 
 	let screenIndex: number = 0;
-	let currentScreen: string = Screens.MAIN_MENU;
+	let currentScreen: string = Screens.CHECKS_SCREEN;
 	let menuItems: string[] = [Screens.MAZE_SCREEN, Screens.CHECKS_SCREEN, Screens.COFFEE_SCREEN];
 
 	const changeMenuSelection = (event: CustomEvent<any>) => {

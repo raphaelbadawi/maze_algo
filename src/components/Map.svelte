@@ -1,11 +1,11 @@
 <script lang="ts">
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
-    import { MazeGraph } from "../classes/calculators/graph";
+    import { MazeGraph } from "../classes/calculators/maze";
     import { MazeHelper } from "../classes/helpers/maze";
     import { MazeRenderer } from "../classes/renderers/maze";
     import { Algos } from "../enums/enums";
     import type { MazeCell } from "../types/types";
-import Checkbox from "./widgets/Checkbox.svelte";
+    import Checkbox from "./widgets/Checkbox.svelte";
 
     export let map: MazeCell[];
 
@@ -18,7 +18,7 @@ import Checkbox from "./widgets/Checkbox.svelte";
         if (!currentPath) return false;
         if (!currentPath.previous) return true;
         board.pinCell(currentPath);
-        currentPath = currentPath.previous;
+        currentPath = currentPath.previous as MazeCell;
     };
 
     const pathSequenceListener = (e) => {
@@ -27,7 +27,7 @@ import Checkbox from "./widgets/Checkbox.svelte";
 
     const fullMazeClean = () => {
         board.clearBoard();
-        map = MazeHelper.clearMap(map);
+        map = MazeHelper.clearMap(map) as MazeCell[];
     };
 
     const showMazeSolution = (algo: Algos) => {

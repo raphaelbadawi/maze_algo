@@ -6,7 +6,7 @@ export class MazeRenderer extends Renderer {
   canvas: HTMLDivElement;
 
   constructor(map: MazeCell[]) {
-    super (map);
+    super(map);
   }
 
   private renderWalls(cellElement: HTMLDivElement, walls: boolean[]) {
@@ -18,39 +18,26 @@ export class MazeRenderer extends Renderer {
     return cellElement;
   }
 
-  renderCell(cell: MazeCell) {
-    const { posX, posY, walls } = cell;
-    let cellElement: HTMLDivElement = document.createElement("div");
-    cellElement.classList.add("cell");
-    cellElement.style.gridRow = (posX + 1).toString();
-    cellElement.style.gridColumn = (posY + 1).toString();
-    cellElement.id = `cell-${cell.id}`;
+  override renderCell(cell: MazeCell): HTMLDivElement {
+    let cellElement: HTMLDivElement = super.renderCell(cell);
+    const { walls } = cell;
     cellElement = this.renderWalls(cellElement, walls);
-    if (cell.entrance) cellElement.classList.add("entrance");
-    if (cell.exit) cellElement.classList.add("exit");
+    if (cell.start) cellElement.classList.add("start");
+    if (cell.end) cellElement.classList.add("end");
     if (cell.trap) cellElement.classList.add("trap");
     this.canvas.appendChild(cellElement);
+    return cellElement;
   }
 
-  pinCells(path: MazeCell) {
-    if (!path) return false;
-    while (path.previous) {
-      this.pinCell(path);
-      path = path.previous;
-    }
-  }
-
-  pinCell(cell: MazeCell) {
-    if (cell.entrance || cell.exit) return;
-    const cellElement = document.querySelector(`#cell-${cell.id}`) as HTMLDivElement;
-    cellElement.style.backgroundImage = "radial-gradient(closest-side at 50%, darkgrey, transparent)";
+  override pinCell(cell: MazeCell) {
+    if (cell.start || cell.end) return;
+    super.pinCell(cell);
   }
 
   clearBoard() {
     for (const cell of this.map) {
-      if (cell.entrance || cell.exit) continue;
-      const cellElement = document.querySelector(`#cell-${cell.id}`) as HTMLDivElement;
-      cellElement.style.backgroundImage = "";
+      if (cell.start || cell.end) continue;
+      super.clearCell(cell);
     }
   }
 }

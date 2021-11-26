@@ -72,11 +72,24 @@
             return;
         }
         maps = await Promise.resolve(await res.json());
+        Object.keys(maps).forEach(key => {
+            Object.keys(maps[key]).forEach(subKey => {
+                maps[key][subKey].forEach(cell => {
+                    if (cell.entrance) {
+                        cell.start = cell.entrance;
+                        delete cell.entrance;
+                    }
+                    if (cell.exit) {
+                        cell.end = cell.exit;
+                        delete cell.exit;
+                    }
+                })
+            });
+        });
         dispatchMapsChoices('keyboardHandlerChanged', {
             choices: mapsChoices
         });
         stringifyMapsChoices();
-        currentMap = maps["25"]["ex-2"];
     });
 
     onDestroy(() => {
