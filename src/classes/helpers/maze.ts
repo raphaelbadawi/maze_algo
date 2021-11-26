@@ -3,11 +3,11 @@ import { Helper } from "./helper";
 
 export class MazeHelper extends Helper {
     /** Get available moves from an instance of the maze map */
-    override getAvailableMoves(map: MazeCell[], startPoint: MazeCell, ignoreWalls: boolean = false): MazeCell[] {
+    override getAvailableMoves(map: MazeCell[], startPoint: MazeCell, builderMode: boolean = false): MazeCell[] {
         let availableMoves = super.getAvailableMoves(map, startPoint) as MazeCell[];
+        if (builderMode) return availableMoves;
         return availableMoves.filter(cell => {
             if (cell.trap) return false;
-            if (ignoreWalls) return cell;
             if (
                 (cell.posX == startPoint.posX - 1 && !startPoint.walls[0])
                 || (cell.posY == startPoint.posY + 1 && !startPoint.walls[1])

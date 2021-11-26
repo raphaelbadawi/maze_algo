@@ -35,8 +35,7 @@ export abstract class Renderer {
     }
 
     pinCells(path: AbstractCell) {
-        if (!path) return false;
-        while (path.previous) {
+        while (path?.previous) {
             this.pinCell(path);
             path = path.previous;
         }

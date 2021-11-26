@@ -1,3 +1,3 @@
-import { Graph } from "./graph";
+import { Calculator } from "./calculator";
 
-export class ChecksGraph extends Graph {}
+export class ChecksCalculator extends Calculator {}

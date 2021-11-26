@@ -1,9 +1,9 @@
 import type { MazeCell } from "../../types/types";
 import { MazeHelper } from "../helpers/maze";
 import type { MazeRenderer } from "../renderers/maze";
-import { Graph } from "./graph";
+import { Calculator } from "./calculator";
 
-export class MazeGraph extends Graph {
+export class MazeCalculator extends Calculator {
   override map: MazeCell[];
   override startPoint: MazeCell;
   override helper: MazeHelper;

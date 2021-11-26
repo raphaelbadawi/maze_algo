@@ -3,7 +3,8 @@ import type { AbstractCell } from "../../types/types";
 import type { Helper } from "../helpers/helper";
 import type { Renderer } from "../renderers/renderer";
 
-export abstract class Graph {
+/** @todo refactor using graph */
+export abstract class Calculator {
     map: AbstractCell[];
     board: Renderer;
     startPoint: AbstractCell;

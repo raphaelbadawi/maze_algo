@@ -29,11 +29,20 @@ export class ChecksRenderer extends Renderer {
         return pawnElement;
     }
 
+    private isLegalMove(targetElement: HTMLDivElement): boolean {
+        const draggedCell = this.map.find(cell => cell.id == parseInt(this.dragged.parentElement.id.split("-")[1]));
+        const targetCell = this.map.find(cell => cell.id == parseInt(targetElement.id.split("-")[1]));
+        if (!draggedCell || !targetCell) return;
+        const availableMoves = this.helper.getAvailableMoves(this.map, draggedCell);
+        return availableMoves.includes(targetCell);
+    }
+
+    /** @todo refactor this */
     override renderCell(cell: ChecksCell): HTMLDivElement {
         let cellElement: HTMLDivElement = super.renderCell(cell);
         cellElement.addEventListener("dragenter", e => {
             const target = e.target as HTMLDivElement;
-            target.style.filter = "drop-shadow(16px 16px 20px red) invert(75%)";
+            target.style.filter = this.isLegalMove(target) ? "drop-shadow(16px 16px 20px red) invert(75%)" : "drop-shadow(16px 16px 20px red)";
         });
         cellElement.addEventListener("dragleave", e => {
             const target = e.target as HTMLDivElement;
@@ -44,11 +53,7 @@ export class ChecksRenderer extends Renderer {
             const target = e.target as HTMLDivElement;
             target.style.filter = "";
             this.dragged.style.opacity = "1";
-            const draggedCell = this.map.find(cell => cell.id == parseInt(this.dragged.parentElement.id.split("-")[1]));
-            const targetCell = this.map.find(cell => cell.id == parseInt(target.id.split("-")[1]));
-            if (!draggedCell || !targetCell) return;
-            const availableMoves = this.helper.getAvailableMoves(this.map, draggedCell);
-            if (availableMoves.includes(targetCell)) target.appendChild(this.dragged);
+            if (this.isLegalMove(target)) target.appendChild(this.dragged);
         });
         if (cell.color == PawnColor.WHITE) cellElement.classList.add("white");
         if (cell.color == PawnColor.BLACK) cellElement.classList.add("black");

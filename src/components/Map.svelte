@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
-    import { MazeGraph } from "../classes/calculators/maze";
+    import { MazeCalculator } from "../classes/calculators/maze";
     import { MazeHelper } from "../classes/helpers/maze";
     import { MazeRenderer } from "../classes/renderers/maze";
     import { Algos } from "../enums/enums";
@@ -10,7 +10,7 @@
     export let map: MazeCell[];
 
     let board: MazeRenderer;
-    let R2D2: MazeGraph;
+    let R2D2: MazeCalculator;
     let stepDisplay: false;
     let currentPath: MazeCell;
 
@@ -54,7 +54,7 @@
             board.renderCell(cell)
         });
 
-        R2D2 = new MazeGraph(map, board);
+        R2D2 = new MazeCalculator(map, board);
     });
 
     onDestroy(() => window.removeEventListener("keydown", pathSequenceListener));
